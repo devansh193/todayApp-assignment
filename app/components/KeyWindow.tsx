@@ -14,7 +14,7 @@ const KeyWindow: React.FC<KeyWindowProps> = ({handleButton}) => {
     <div className="bg-[#555555] flex w-max">
       <div className=" grid grid-cols-6 hidden md:grid ">
         {sciKey.map((item, index) => (
-          <button className="p-5 border cursor-pointer border-neutral-700 text-white bg-[#555555]" key={index} onClick={()=>handleButton(item)}>{item}</button>
+          <button className="p-5 border cursor-pointer border-neutral-700 text-white bg-[#555555] text-xl " key={index} onClick={()=>handleButton(item)}>{item}</button>
    ))}
       </div>
       <div className="grid grid-cols-4 ">
@@ -22,11 +22,11 @@ const KeyWindow: React.FC<KeyWindowProps> = ({handleButton}) => {
           const isNumberButton = /\d|\./.test(item);
           const isLastButtonInRow = (index + 1) % 4 === 0;
           const isEqualButton = item === "=";
-          const bgColor = isNumberButton ? 'bg-[#888888]' : 'bg-[#555555]';
-          const specialBgColor = (isLastButtonInRow || isEqualButton) ? 'bg-orange-400' : bgColor;  
+          const bgColor = isNumberButton ? 'bg-[#73736d]' : 'bg-[#555555]';
+          const specialBgColor = (isLastButtonInRow || isEqualButton) ? 'bg-[#efa13b]' : bgColor;  
           return (
-            <button 
-              className={`p-5 border cursor-pointer text-white border-neutral-700 ${specialBgColor} ${item === '0' ? 'col-span-2' : ''}`} 
+            <button  //numeric button component
+              className={`p-5 border cursor-pointer text-white border-neutral-700 text-xl ${specialBgColor} ${item === '0' ? 'col-span-2' : ''}`} 
               key={index}
               onClick={() => handleButton(item)}  
               >

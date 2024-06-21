@@ -1,4 +1,4 @@
-"use client";
+
 import React, { useState, useCallback } from "react";
 import KeyWindow from "./KeyWindow";
 import DisplayWindow from "./DisplayWindow";
@@ -6,10 +6,11 @@ import { useRecoilState } from "recoil";
 import { expressionState } from "../state/atom/Expression";
 import ConfettiExplosion from 'react-confetti-explosion';
 import NavBar from "./NavBar";
+import { confettiState } from "../state/atom/Explosion";
 
 const Calculator = () => {
   const [expression, setExpression] = useRecoilState(expressionState);
-  const [isExploding, setIsExploding] = useState(false);
+  const [isExploding, setIsExploding] = useRecoilState(confettiState);
 
   const sciFunc = {
     sin: "sin",
@@ -26,7 +27,22 @@ const Calculator = () => {
   const triggerConfetti = useCallback(() => {
     setIsExploding(true);
     setTimeout(() => setIsExploding(false), 3000);
+    console.log("exploded")
   }, []);
+
+  function checkForConsecutiveNumbers(expression: string) {
+    const operationPattern = /(\d+)\s*([\+\-\×\÷])\s*(\d+)/g;
+    let match;
+    while ((match = operationPattern.exec(expression)) !== null) {
+        const num1 = parseInt(match[1]);
+        const num2 = parseInt(match[3]);
+        if (Math.abs(num1 - num2) === 1) {
+          console.log("checked")
+            return true; 
+        }
+    }// N
+    return false; 
+}
 
   function calcResult() {
     if (expression.length !== 0) {
@@ -38,20 +54,20 @@ const Calculator = () => {
           .replace(/ln/g, 'Math.log')
           .replace(/log/g, 'Math.log10')
           .replace(/π/g, 'Math.PI')
-          .replace(/e/g, 'Math.E')
-          .replace(/√/g, 'Math.sqrt')
+          .replace(/e/g, 'Math.E')  
+          .replace(/³√/g, 'Math.cbrt')
+          .replace(/²√/g, 'Math.sqrt')
           .replace(/(\d+\.?\d*)\s*²/g, 'Math.pow($1, 2)')
           .replace(/(\d+\.?\d*)\s*³/g, 'Math.pow($1, 3)')
           .replace(/10\s*\^([-+]?\d+\.?\d*)/g, 'Math.pow(10, $1)')
-          .replace(/x/g, '*');
-        
+          .replace(/×/g, '*')
+          .replace(/÷/g, '/');
+        const hasConsecutiveNumbers = checkForConsecutiveNumbers(expression);
         let compute = eval(computeExpression);
         compute = parseFloat(compute.toFixed(4));
+        console.log(expression)
+        if(hasConsecutiveNumbers) triggerConfetti();
         setExpression(compute.toString());
-
-        if (/\d{2,}/.test(expression)) {
-          triggerConfetti();
-        }
       } catch (error) {
         setExpression("Error");
       }
@@ -71,14 +87,29 @@ const Calculator = () => {
       case "x²":
         setExpression(expression + "²");
         break;
+      case "π":
+        setExpression(expression + "π");
+        break;
       case "x³":
         setExpression(expression + "³");
         break;    
       case "10ˣ":
         setExpression(expression + "10^");
         break;
-      case "x":
-        setExpression(expression + "x");
+      case "×":
+        setExpression(expression + "×");
+        break;
+      case "÷":
+        setExpression(expression + "÷");
+        break;
+      case "²√x":
+          setExpression("²√" + expression);
+        break
+        case "³√x":
+          setExpression("³√" + expression);
+        break  
+      case "¹/x":
+        setExpression("1/"+ expression);
         break;
       case "!":
         const lastNum = extractLastNum(expression);
@@ -116,15 +147,16 @@ const Calculator = () => {
 
   return (
     <div className=" flex flex-col w-max rounded-lg mt-6 border border-neutral-400 relative">
-      {isExploding && (
-        <ConfettiExplosion 
+       {isExploding && (
+        <ConfettiExplosion
+          className="explosion"
           force={0.8}
           duration={3000}
-          particleCount={100}
+          particleCount={650}
           width={1600}
         />
       )}
-      <NavBar/>
+       <NavBar/>
       <DisplayWindow expression={expression} />
       <KeyWindow handleButton={handleButton} />
     </div>

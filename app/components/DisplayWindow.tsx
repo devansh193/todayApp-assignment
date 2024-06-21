@@ -7,8 +7,8 @@ interface DisplayWindowProps {
 
 const DisplayWindow:React.FC<DisplayWindowProps> = ({expression}) => {
     return(
-        <div className="bg-[#414141] h-24 flex items-end  justify-end ">
-            <p className="text-xl text-white m-4">{expression}</p>
+        <div className="bg-[#414141] h-24 flex items-end justify-end ">
+            <p className="text-6xl font-thin text-white m-4">{expression}</p>
         </div>
     );
 };
